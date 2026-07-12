@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Hashlife</title>
+    <style>
+        body { background-color: #161616; display: flex; flex-direction: column; align-items: center; }
+        canvas { border: 2px solid #333; background-color: white; cursor: crosshair; }
+        .controls { margin: 10px; }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="800"></canvas>
+
+    <div class="controls">
+        <button id="btnStep">Siguiente Generación</button>
+        <button id="btnRun">Reproducir / Pausa</button>
+        <button id="btnReset">Reiniciar</button>
+        <span id="genCount">Generación: 0</span>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>

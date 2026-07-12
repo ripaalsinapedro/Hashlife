@@ -1,0 +1,5 @@
+{
+    "workbench.commandPalette.showAskInChat": false,
+    "workbench.browser.enableChatTools": false,
+    "chat.agent.enabled": false
+}
