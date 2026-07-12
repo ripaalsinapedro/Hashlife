@@ -1,6 +1,6 @@
 import Quadtree from "./Quadtree.js";
 
-export default class GoL {
+export default class CGoL {
     #quadtree;
 
     /**
@@ -155,7 +155,7 @@ export default class GoL {
      * This is the base case for the get succescor method.
      * The base case is a node of level k = 2, or a 4x4 area
      * node, wich then calculate de center cells using the 
-     * CoL rules
+     * CGoL rules
      * 
      * @param {Node} node the k = 2 level node of 4x4
      * @returns a new k = 1 level node with the updated cells of the 2x2 grid

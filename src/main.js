@@ -1,4 +1,4 @@
-import GoL from "./GoL.js";
+import CGoL from "./CGoL.js";
 
 let g, size;
 
@@ -44,7 +44,7 @@ function main() {
 
 
     let coordsArray = gosperGliderGun;
-    g = new GoL(size, coordsArray);
+    g = new CGoL(size, coordsArray);
     loop();
 }
 
@@ -130,7 +130,7 @@ async function cargarPatronLocal(nombreArchivo) {
             celdas = parseRLE(texto);
         }
 
-        g = new GoL(size, celdas);
+        g = new CGoL(size, celdas);
         loop();
     } catch (error) {
         console.error("Error al cargar el patrón:", error);
