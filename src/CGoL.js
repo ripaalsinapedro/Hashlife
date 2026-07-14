@@ -13,10 +13,15 @@ export default class CGoL {
      * @param {Array} data the array data
      */
     constructor(size, data = undefined) {
-        this.data = data ? data : this.#InitialzeFromRandomArray(size);
         this.#quadtree = new Quadtree();
 
-        this.#quadtree.InitalizeFromCoordsArray(this.data, size);
+        if (data == undefined) {
+            this.#InitialzeFromRandomArray();
+        } else {
+            (data[0].length == undefined) ?
+                this.#quadtree.InitalizeFromCoordsArray(data, size) :
+                this.#quadtree.InitalizeFromProcessPattern(data)
+        }
     }
 
     /**
@@ -38,6 +43,29 @@ export default class CGoL {
         }
 
         return coordsArray;
+    }
+
+    /**
+     * It gets a json file with the quadtree data, and then
+     * crate a url to download the file
+     * 
+     * @param {String} fileName the name of the download file
+     */
+    savePattern(fileName = "pattern") {
+        let saveFile = this.#quadtree.save();
+        const blob = new Blob([saveFile], { type: "application/json" });
+
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        URL.revokeObjectURL(url);
     }
 
     /**

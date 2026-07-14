@@ -1,10 +1,10 @@
 import Node from "./Node.js"
 
 export default class Quadtree {
-    #nodeCache;
     #idCount;
     #root;
 
+    #nodeCache;
     #deadCache;
 
     /**
@@ -44,6 +44,84 @@ export default class Quadtree {
     InitalizeFromCoordsArray(coordArray, size) {
         let k = this.#getBoundindgBox(size);
         this.#root = this.#createNode(coordArray, k, 0, 0);
+    }
+
+    /**
+     * Get the data of a saved quadtree, and load it into the current quadtree
+     * 
+     * @param {Array} patternArray an array containing the data of each node
+     */
+    InitalizeFromProcessPattern(patternArray) {
+        let nodeIdCache = new Map();
+
+        nodeIdCache.set(0, this.dead);
+        nodeIdCache.set(1, this.alive);
+
+        for (const [id, nw_id, ne_id, sw_id, se_id, level, result_id] of patternArray) {
+            const nw = nodeIdCache.get(nw_id);
+            const ne = nodeIdCache.get(ne_id);
+            const sw = nodeIdCache.get(sw_id);
+            const se = nodeIdCache.get(se_id);
+
+            const newNode = this.createNewNode(nw, ne, sw, se);
+            nodeIdCache.set(id, newNode);
+        }
+
+        const rootId = patternArray[patternArray.length - 1][0]
+        const root = nodeIdCache.get(rootId);
+        this.#root = root;
+    }
+
+
+    /**
+     * It stores each node of the node cache into an array,
+     * and then into a json file
+     * 
+     * @returns a json file with te pattern data
+     */
+    save() {
+        let nodesEntries = this.#nodeCache.entries;
+        let nodesEntriesArray = new Array();
+
+        for (let [key, node] of nodesEntries) {
+            nodesEntriesArray.push([
+                node.id,
+                node.nw.id,
+                node.ne.id,
+                node.sw.id,
+                node.se.id,
+                node.level,
+                node.result ? node.result.id : undefined
+            ]);
+        }
+
+        let saveFile = JSON.stringify(nodesEntriesArray);
+        return saveFile;
+    }
+
+    /**
+     * This get four nodes, and creat a new node, 
+     * if a node with those exact sub nodes hasnt been
+     * created yet, and stored in the nodes cache
+     * 
+     * @param {Node} nw the north west node
+     * @param {Node} ne the noth east node
+     * @param {Node} sw the south west node
+     * @param {Node} se the south east node
+     */
+    createNewNode(nw, ne, sw, se) {
+        const key = `${nw.id}.${ne.id}.${sw.id}.${se.id}`;
+
+        let newNode = this.#nodeCache.get(key);
+
+        if (newNode != undefined) {
+            return newNode;
+        }
+
+        newNode = new Node(this.#idCount++, nw.level + 1, nw, ne, sw, se);
+
+        this.#nodeCache.set(key, newNode);
+        return newNode;
     }
 
     /**
@@ -95,31 +173,6 @@ export default class Quadtree {
         let side = Math.sqrt(size);
         let k = Math.ceil(Math.log2(side));
         return Math.max(k, 4);
-    }
-
-    /**
-     * This get four nodes, and creat a new node, 
-     * if a node with those exact sub nodes hasnt been
-     * created yet, and stored in the nodes cache
-     * 
-     * @param {Node} nw the north west node
-     * @param {Node} ne the noth east node
-     * @param {Node} sw the south west node
-     * @param {Node} se the south east node
-     */
-    createNewNode(nw, ne, sw, se) {
-        const key = `${nw.id}.${ne.id}.${sw.id}.${se.id}`;
-
-        let newNode = this.#nodeCache.get(key);
-
-        if (newNode != undefined) {
-            return newNode;
-        }
-
-        newNode = new Node(this.#idCount++, nw.level + 1, nw, ne, sw, se);
-
-        this.#nodeCache.set(key, newNode);
-        return newNode;
     }
 
     /**

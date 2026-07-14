@@ -1,5 +1,5 @@
 import CGoL from "./CGoL.js";
-import cargarPatronLocal from "./Patterns.js"
+import loadPatterns from "./Patterns.js"
 
 let g, size;
 
@@ -9,8 +9,9 @@ function main() {
 }
 
 async function initializeCGoL() {
-    let coordsArray = await cargarPatronLocal("test_gun.rle");
-    g = new CGoL(size, coordsArray);
+    let defaultPattern = await loadPatterns();
+
+    g = new CGoL(size, defaultPattern);
     loop();
 }
 

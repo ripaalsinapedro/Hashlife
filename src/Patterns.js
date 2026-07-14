@@ -1,25 +1,45 @@
 
 /**
- * This function converts the content of a rle file to an array of live cells
+ * Load and process a stored pattern
  * 
  * @param {String} fileName the file name containing the pattern
- * @returns an array of live cells
  */
-export default async function loadPatterns(fileName) {
+export default async function loadPatterns(fileName = "default.json") {
     try {
-        const answer = await fetch(`./patterns/${fileName}`);
+
+        const answer = (fileName.endsWith("rle")) ?
+            await fetch(`./patterns/${fileName}`) :
+            await fetch(`./processPatterns/${fileName}`)
 
         if (!answer.ok) {
             throw new Error("Cannot load the pattern");
         }
 
-        const text = await answer.text();
-
-        let cells = parseRLE(text);
-        return cells;
+        return (fileName.endsWith("rle")) ? processRleFile(answer) : processJsonFile(answer)
     } catch (error) {
         console.error("Error loading the pattern:", error);
     }
+}
+
+/**
+ * 
+ * @param {Object} file a rle file
+ * @returns an array of live cells
+ */
+async function processRleFile(file) {
+    let text = await file.text();
+    let patternCells = parseRLE(text);
+    return patternCells;
+}
+
+/**
+ * 
+ * @param {Object} file a json file
+ * @returns an array wiht the quadtree data of a pattern
+ */
+async function processJsonFile(file) {
+    let patternArray = await file.json();
+    return patternArray;
 }
 
 function parseRLE(rleContent) {
